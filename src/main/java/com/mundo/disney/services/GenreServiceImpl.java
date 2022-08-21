@@ -1,6 +1,7 @@
 package com.mundo.disney.services;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -26,6 +27,11 @@ public class GenreServiceImpl implements GenreService {
 	public List<Genre> getAll() {
 		
 		return generoRepo.findAll();
+	}
+	
+	@Override
+	public Optional<Genre> getById(Long idGenero){
+		return generoRepo.findById(idGenero);
 	}
 
 	@Override

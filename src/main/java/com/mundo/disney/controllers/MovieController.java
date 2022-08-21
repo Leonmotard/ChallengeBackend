@@ -3,6 +3,7 @@ package com.mundo.disney.controllers;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -25,9 +26,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.mundo.disney.Entities.Genre;
 import com.mundo.disney.Entities.Movie;
 import com.mundo.disney.dto.MovieDTO;
 import com.mundo.disney.excepciones.Excepcion;
+import com.mundo.disney.services.GenreService;
 import com.mundo.disney.services.MovieService;
 import com.mundo.disney.config.SwaggerConfig;
 
@@ -41,11 +44,16 @@ public class MovieController {
 
 	@Autowired
 	MovieService peliculaServicio;
+	@Autowired
+	GenreService generoServicio;
 
 	/**
 	 * Permite filtrar peliculas curl --location --request GET
-	 * 'http://localhost:8081//movies?name=nombre' Permite filtrar peliculas por su
-	 * titulo.
+	 * Permite filtrar peliculas por su titulo.
+	 * 'http://localhost:8081//movies?name=nombre' 
+	 * Permite filtrar peliculas por su id de genero
+	 * 'http://localhost:8081//movies?genre=genero'
+	 * 
 	 */
 	@GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE })
 	public List<MovieDTO> filtrarPorNombre(
@@ -101,9 +109,16 @@ public class MovieController {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, null);
 		}
 
+		
 		Movie p = form.toPojo();
+		Optional<Genre> genero = generoServicio.getById(form.getIdGenero());
+		
+		if(genero.isPresent())
+			p.setGenero(genero.get());
+		else
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El id ingresado no pertenece a un genero presente en la base de datos.");
 
-		peliculaServicio.insert(p);
+		peliculaServicio.insert(p); 
 
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(p.getId()).toUri();
 		return ResponseEntity.created(location).build();
@@ -114,16 +129,25 @@ public class MovieController {
 	 * Modifica un personaje existente en la base de datos: curl --location
 	 * --request PUT 'http://localhost:8081/movies/32' --header 'Accept:
 	 * application/json' --header 'Content-Type: application/json' --data-raw '{
-	 * "titulo": "El dorado", "fechaDeCreacion": 2022-03-26, "calificacion": 4 , "genero": aventura}'
+	 * "titulo": "El dorado", "fechaDeCreacion": 2022-03-26, "calificacion": 4 , "idGenero": 10}'
 	 * 
 	 * @param p Movie a modificar
 	 * @return Movie Editado o error en otro caso
 	 * @throws Excepcion
 	 */
 	@PutMapping("/{id}")
-	public ResponseEntity<Object> actualizar(@RequestBody MovieDTO form, @PathVariable long id) throws Excepcion {
+	public ResponseEntity<Object> actualizar(@RequestBody MovieDTO form, @PathVariable Long id) throws Excepcion {
 
 		Movie p = form.toPojo();
+		
+		
+		  Optional<Genre> genero = generoServicio.getById(form.getIdGenero());
+		  
+		  if(genero.isPresent()) p.setGenero(genero.get()); else return
+		  ResponseEntity.status(HttpStatus.BAD_REQUEST).
+		  body("El id ingresado no pertenece a un genero presente en la base de datos."
+		  );
+		 
 		p.setId(id); // El id es el identificador, con lo cual es el único dato que no permito
 						// modificar
 		peliculaServicio.update(p);

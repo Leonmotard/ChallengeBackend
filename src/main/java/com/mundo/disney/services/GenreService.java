@@ -1,6 +1,7 @@
 package com.mundo.disney.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,13 @@ public interface GenreService {
 	 * @return Lista de Character
 	 */
 	public List<Genre> getAll();
+	
+	/**
+	 * Devuelve un genero dado su Id.
+	 * @param idGenero
+	 * @return Optional<Genre>
+	 */
+	public Optional<Genre> getById(Long idGenero);
 	
 	/**
 	 * Inserta un nuevo genero a la base de datos.

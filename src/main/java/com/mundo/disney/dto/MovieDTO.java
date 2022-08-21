@@ -8,7 +8,6 @@ import java.util.List;
 import org.springframework.hateoas.RepresentationModel;
 
 import com.mundo.disney.Entities.Character;
-import com.mundo.disney.Entities.Genre;
 import com.mundo.disney.Entities.Movie;
 
 public class MovieDTO extends RepresentationModel<MovieDTO> {
@@ -18,10 +17,12 @@ public class MovieDTO extends RepresentationModel<MovieDTO> {
 	private LocalDate fechaDeCreacion;
 	
 	private int calificacion;
+	
+	private Long idGenero;
 
 	private List<Character> personajesAsociados;
 	
-	private Genre genero;
+	
 	
 	public MovieDTO() {
 		super();
@@ -32,7 +33,7 @@ public class MovieDTO extends RepresentationModel<MovieDTO> {
 		this.fechaDeCreacion = m.getFechaDeCreacion();
 		this.personajesAsociados = m.getPersonajes();
 		this.titulo = m.getTitulo();
-		this.genero = m.getGenero();
+		this.idGenero = m.getGenero().getId();
 	}
 	
 	public String getTitulo() {
@@ -67,12 +68,12 @@ public class MovieDTO extends RepresentationModel<MovieDTO> {
 		this.personajesAsociados = personajesAsociados;
 	}
 	
-	public Genre getGenero() {
-		return genero;
+	public Long getIdGenero() {
+		return idGenero;
 	}
 	
-	public void setGenero(Genre genero) {
-		this.genero = genero;
+	public void setIdGenero(Long genero) {
+		this.idGenero = genero;
 	}
 	
 	public Movie toPojo()
@@ -82,7 +83,6 @@ public class MovieDTO extends RepresentationModel<MovieDTO> {
 		m.setFechaDeCreacion(this.getFechaDeCreacion());
 		m.setTitulo(this.getTitulo());
 		m.setPersonajes(this.getPersonajesAsociados());
-		m.setGenero(this.getGenero());
 		return m;
 	}
 	

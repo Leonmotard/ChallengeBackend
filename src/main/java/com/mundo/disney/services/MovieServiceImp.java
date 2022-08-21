@@ -1,6 +1,7 @@
 package com.mundo.disney.services;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -9,6 +10,7 @@ import javax.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.mundo.disney.Entities.Genre;
 import com.mundo.disney.Entities.Movie;
 import com.mundo.disney.excepciones.Excepcion;
 import com.mundo.disney.repositories.GenreRepository;
@@ -38,8 +40,9 @@ public class MovieServiceImp implements MovieService {
 
 	@Override
 	public List<Movie> getMovieByGenre(Long idGenre) {
-		
-		return peliculaRepo.findByGenero(idGenre);
+		Optional<Genre> gen = generoRepo.findById(idGenre);
+		Genre genero = gen.get();
+		return peliculaRepo.findByGenero(genero);
 	}
 
 	@Override
@@ -59,7 +62,7 @@ public class MovieServiceImp implements MovieService {
 			throw new Excepcion("La pelicula que desea guardar no se encuentra en la base de datos.",400);
 		}
 		else
-			peliculaRepo.update(pelicula.getId(), pelicula.getTitulo(), pelicula.getFechaDeCreacion(), pelicula.getCalificacion(), generoRepo.findByNombre(pelicula.getGenero().getNombre()).getId());
+			peliculaRepo.update(pelicula.getId(), pelicula.getTitulo(), pelicula.getFechaDeCreacion(), pelicula.getCalificacion(), pelicula.getGenero().getId());
 
 	}
 
